@@ -1,6 +1,9 @@
 name = "SparsityProbes"
 uuid = "9960644d-b93b-4fd9-ba54-919deff2a9e3"
-authors = ["Magnus Kroner kroner@campus.tu-berlin.de"]
+authors = [
+    "Magnus Kroner <kroner@campus.tu-berlin.de>",
+    "Sai Krishna Mandagiri <mandagiri@campus.tu-berlin.de>",
+]
 version = "1.0.0-DEV"
 
 [compat]

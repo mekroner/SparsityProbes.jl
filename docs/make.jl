@@ -5,7 +5,10 @@ DocMeta.setdocmeta!(SparsityProbes, :DocTestSetup, :(using SparsityProbes); recu
 
 makedocs(;
     modules=[SparsityProbes],
-    authors="Magnus Kroner kroner@campus.tu-berlin.de",
+    authors=[
+        "Magnus Kroner <kroner@campus.tu-berlin.de>",
+        "Sai Krishna Mandagiri <mandagiri@campus.tu-berlin.de>",
+    ],
     sitename="SparsityProbes.jl",
     format=Documenter.HTML(;
         canonical="https://mekroner.github.io/SparsityProbes.jl",
