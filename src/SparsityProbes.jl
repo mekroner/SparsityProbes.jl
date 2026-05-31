@@ -1,7 +1,7 @@
 module SparsityProbes
 
     using ADTypes: ADTypes, jacobian_sparsity
-    using SparseConnectivityTracer: GradientTracer, jacobian_tracers_to_matrix, to_array
+    using SparseConnectivityTracer: GradientTracer, jacobian_tracers_to_matrix, to_array, myempty
     
     const T = GradientTracer{Int, BitSet}
 
@@ -26,13 +26,18 @@ module SparsityProbes
     function create_chunks(x::AbstractArray, chunk_size::Int)::Vector{UnitRange{Int}}
         """
         Splits the linear indices of array `x` int a vector of ranges
-        based on the `chunk_size`. Handles uneven edgecase and to large chunk edgecase
+        based on the `chunk_size`. Handles uneven edgecase and to large 
+        chunk edgecase.
         """
         n = length(x)
         return [i:min(i + chunk_size - 1, n) for i in 1:chunk_size:n]
     end
     
-    function trace_input_chunk(::Type{Tracer}, x::AbstractArray, chunk::UnitRange{Int}) where {Tracer}
+    function trace_input_chunk(::Type{Tracer}, x::AbstractArray, chunk::UnitRange{Int}):: AbstractArray{Tracer} where {Tracer}
+        """
+        Returns an array of tracers matching the shape of `x`
+        Seeds only indices within the chunks. All others are empty.
+        """
         # TODO: seed only indices within this chunk, {}
         @warn "Not Implemented yet"
         return
