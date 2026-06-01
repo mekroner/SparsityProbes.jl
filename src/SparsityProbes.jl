@@ -26,7 +26,8 @@ module SparsityProbes
     function create_chunks(x::AbstractArray, chunk_size::Int)::Vector{UnitRange{Int}}
         """
         Splits the linear indices of array `x` int a vector of ranges
-        based on the `chunk_size`. Handles uneven edgecase and to large chunk edgecase
+        based on the `chunk_size`. Handles uneven edgecase and to large 
+        chunk edgecase.
         """
         n = length(x)
         return [i:min(i + chunk_size - 1, n) for i in 1:chunk_size:n]
