@@ -38,6 +38,8 @@ module SparsityProbes
         for (j, val) in enumerate(x)
             if j in chunk
                 xt[j] = T(val)
+            else
+                xt[j] = nothing
             end
         end
         return xt
