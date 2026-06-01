@@ -35,4 +35,5 @@ end
         @test getfield(xt[3], 1) == BitSet()
         @test getfield(xt[4], 1) == BitSet()
     end
+
 end
