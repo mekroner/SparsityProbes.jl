@@ -3,11 +3,6 @@ using Test
 using SparseConnectivityTracer: GradientTracer, myempty
 
 
-
-@testset "Chunked Detector Fuzzy Test" begin
-end
-
-
 function toy_function(x)
     y1 = x[1] * x[2]
     y2 = x[2] + 0.0
