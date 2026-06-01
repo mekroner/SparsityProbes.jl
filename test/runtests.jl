@@ -1,6 +1,6 @@
 using SparsityProbes: create_chunks, trace_input_chunk, combine_patterns
 using Test
-# using SparseConnectivityTracer: GradientTracer, myempty
+using SparseConnectivityTracer: GradientTracer
 
 
 function toy_function(x)
@@ -24,16 +24,16 @@ end
         @test chunks_large == [1:4]
     end
     @testset "Trace Input Chunk (2)" begin
-        # chunk = 1:2
-        # T = GradientTracer{Int, BitSet}
-        # xt = trace_input_chunk(T, x_test, chunk)
+        chunk = 1:2
+        T = GradientTracer{Int, BitSet}
+        xt = trace_input_chunk(T, x_test, chunk)
 
-        # @test eltype(xt) == T
-        # @test getfield(xt[1], 1) == BitSet([1])
-        # @test getfield(xt[2], 1) == BitSet([2])
+        @test eltype(xt) == T
+        @test getfield(xt[1], 1) == BitSet([1])
+        @test getfield(xt[2], 1) == BitSet([2])
 
-        # @test getfield(xt[3], 1) == BitSet()
-        # @test getfield(xt[4], 1) == BitSet()
+        @test getfield(xt[3], 1) == BitSet()
+        @test getfield(xt[4], 1) == BitSet()
     end
 
 end
