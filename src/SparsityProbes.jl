@@ -1,7 +1,7 @@
 module SparsityProbes
 
     using ADTypes: ADTypes, jacobian_sparsity
-    using SparseConnectivityTracer: GradientTracer, jacobian_tracers_to_matrix, to_array
+    using SparseConnectivityTracer: GradientTracer, myempty, jacobian_tracers_to_matrix, to_array
     
     const T = GradientTracer{Int, BitSet}
 
@@ -32,13 +32,13 @@ module SparsityProbes
         return [i:min(i + chunk_size - 1, n) for i in 1:chunk_size:n]
     end
     
-    function trace_input_chunk(T::Type{Tracer}, x::AbstractArray, chunk::UnitRange{Int})
-        xt = copy(x)
-        for (j, val) in enumerate(x)
-            if j in chunk
-                xt[j] = T(val)
+    function trace_input_chunk(T::Type{GradientTracer{Int, BitSet}}, x::AbstractArray, chunk::UnitRange{Int})
+        xt = Vector{T}(undef, length(x))
+        for i in 1:length(x)
+            if i in chunk
+                xt[i] = T(BitSet(i))
             else
-                xt[j] = nothing
+                xt[i] = myempty(T)
             end
         end
         return xt
