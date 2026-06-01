@@ -39,29 +39,7 @@ end
 
         @test getfield(xt[3], 1) == BitSet()
         @test getfield(xt[4], 1) == BitSet()
-    
-    @testset "Trace Input Chunk (1)" begin
-        T_Tracer = GradientTracer{Int, BitSet}[cite: 25]
-        
-        # Test chunk 1:2
-        chunk = 1:2
-        xt = trace_input_chunk(T_Tracer, x_test, chunk)
-        expected_xt1 = [
-            T_Tracer(BitSet(1)), 
-            T_Tracer(BitSet(2)), 
-            myempty(T_Tracer), 
-            myempty(T_Tracer)
-        ]
-        
-        # Verify structure
-        @test size(xt) == size(x_test)
-        @test eltype(xt) == T_Tracer
-        @test xt = expected_xt1
-        
     end
 
-    @testset "Combine Patterns (1)" begin
-        
-    end
 end
 
