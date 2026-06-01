@@ -32,10 +32,14 @@ module SparsityProbes
         return [i:min(i + chunk_size - 1, n) for i in 1:chunk_size:n]
     end
     
-    function trace_input_chunk(::Type{Tracer}, x::AbstractArray, chunk::UnitRange{Int}) where {Tracer}
-        # TODO: seed only indices within this chunk, {}
-        @warn "Not Implemented yet"
-        return
+    function trace_input_chunk(T::Type{Tracer}, x::AbstractArray, chunk::UnitRange{Int})
+        xt = copy(x)
+        for (j, val) in enumerate(x)
+            if j in chunk
+                xt[j] = T(val)
+            end
+        end
+        return xt
     end
     
     function combine_patterns(patterns::AbstractVector{<:AbstractMatrix})::AbstractMatrix
