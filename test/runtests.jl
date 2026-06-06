@@ -23,6 +23,7 @@ end
         chunks_large = create_chunks(x_test, 10)
         @test chunks_large == [1:4]
     end
+
     @testset "Trace Input Chunk (2)" begin
         chunk = 1:2
         T = GradientTracer{Int, BitSet}
@@ -34,6 +35,18 @@ end
 
         @test getfield(xt[3], 1) == BitSet()
         @test getfield(xt[4], 1) == BitSet()
+    end
+
+    @testset "Combine Patterns (3)" begin
+        patterns = [
+            [true  false; false false],
+            [false true ; false false],
+            [false false; true  false]
+        ]
+
+        combined = combine_patterns(patterns)
+        
+        @test combined == [true  true ; true  false]
     end
 
 end
