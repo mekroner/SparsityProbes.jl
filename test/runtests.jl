@@ -38,11 +38,15 @@ end
     end
 
     @testset "Combine Patterns (3)" begin
-        pattern1 = [1 2; 3 4]
-        pattern2 = [5 6; 7 8]
-        combined = combine_patterns([pattern1, pattern2])
+        patterns = [
+            [true  false; false false],
+            [false true ; false false],
+            [false false; true  false]
+        ]
+
+        combined = combine_patterns(patterns)
         
-        @test combined == [1 2 5 6; 3 4 7 8]
+        @test combined == [true  true ; true  false]
     end
 
 end

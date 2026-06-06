@@ -48,12 +48,10 @@ module SparsityProbes
     function combine_patterns(patterns::AbstractVector{<:AbstractMatrix})::AbstractMatrix
         """
         Merge a sequence of partial sparsity pattern matrices into a single
-        sparsity pattern matrix. Each matrix in `patterns` represents the
-        sparsity information for a chunk of input variables. The resulting
-        matrix is formed by horizontally concatenating these partial pattern
-        matrices.
+        sparsity pattern matrix by performing an element-wise logical OR
+        operation across all matrices.
         """
-        return reduce(hcat, patterns)
+        return reduce((a, b) -> a .| b, patterns)
     end
 
 end
