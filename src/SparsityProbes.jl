@@ -54,4 +54,8 @@ module SparsityProbes
         return reduce((a, b) -> a .| b, patterns)
     end
 
+    function f(x)
+        return x .^2
+    end
+    
 end
