@@ -53,5 +53,6 @@ module SparsityProbes
         """
         return reduce((a, b) -> a .| b, patterns)
     end
+    export jacobian_sparsity
 
-end
+end # module
