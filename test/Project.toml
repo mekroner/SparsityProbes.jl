@@ -1,4 +1,5 @@
 [deps]
 ADTypes = "47edcb42-4c32-4615-8424-f2b9edc5f35b"
 SparseConnectivityTracer = "9f842d2f-2579-4b1d-911e-f412cf18a3f5"
+SparsityProbes = "9960644d-b93b-4fd9-ba54-919deff2a9e3"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
