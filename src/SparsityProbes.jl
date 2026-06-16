@@ -4,7 +4,7 @@ module SparsityProbes
     using SparseConnectivityTracer: GradientTracer, myempty, jacobian_tracers_to_matrix, to_array
     
     const T = GradientTracer{Int, BitSet}
-
+    
     struct ChunkedDetector
         chunk_size::Int
     end
@@ -36,10 +36,9 @@ module SparsityProbes
     function trace_input_chunk(T::Type{GradientTracer{Int, BitSet}}, x::AbstractArray, chunk::UnitRange{Int})
         xt = Vector{T}(undef, length(x))
         for i in 1:length(x)
+            xt[i] = myempty(T)
             if i in chunk
                 xt[i] = T(BitSet(i))
-            else
-                xt[i] = myempty(T)
             end
         end
         return xt
