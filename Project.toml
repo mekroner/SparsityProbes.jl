@@ -4,15 +4,17 @@ authors = [
     "Magnus Kroner <kroner@campus.tu-berlin.de>",
     "Sai Krishna Mandagiri <mandagiri@campus.tu-berlin.de>",
     "Yun-Ting Chiu <yun-ting.chiu@campus.tu-berlin.de>",
+    "Johannes Hammermann <hammermann@campus.tu-berlin.de>"
 ]
 version = "1.0.0-DEV"
-
 
 [deps]
 ADTypes = "47edcb42-4c32-4615-8424-f2b9edc5f35b"
 SparseConnectivityTracer = "9f842d2f-2579-4b1d-911e-f412cf18a3f5"
+XXhash = "137af188-b1ec-11e9-0b40-31ed9142ae64"
 
 [compat]
 ADTypes = "1.22.0"
 SparseConnectivityTracer = "1.2.1"
+XXhash = "0.8.3"
 julia = "1.11"
