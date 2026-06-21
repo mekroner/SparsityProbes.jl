@@ -1,4 +1,5 @@
 [deps]
 ADTypes = "47edcb42-4c32-4615-8424-f2b9edc5f35b"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+LiveServer = "16fef848-5104-11e9-1b77-fb7a48bbb589"
 SparsityProbes = "9960644d-b93b-4fd9-ba54-919deff2a9e3"
