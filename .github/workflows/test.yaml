@@ -22,7 +22,8 @@ jobs:
         exclude:
           - os: macOS-latest
             julia-arch: x86
-
+          - os: ubuntu-latest
+            julia-arch: x86
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
@@ -39,3 +40,4 @@ jobs:
         with:
           files: lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
+
