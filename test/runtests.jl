@@ -1,5 +1,8 @@
 using ADTypes: jacobian_sparsity
-using SparsityProbes: ChunkedDetector, create_chunks, trace_input_chunk, combine_patterns
+import SparsityProbes
+using SparsityProbes:
+    BloomFilterDetector,
+    ChunkedDetector
 using Test
 using SparseConnectivityTracer: GradientTracer, TracerSparsityDetector
 
@@ -19,6 +22,8 @@ function assert_chunked_matches_default(f, x; chunk_sizes=[1, 2, 3, length(x), l
         @test got == expected
     end
 end
+
+nothing
 
 function cross_chunk_function(x)
     y1 = x[1] * x[3] + x[5]
@@ -40,21 +45,21 @@ end
 
     x_test = [10.0, 20.0, 30.0, 40.0]
     @testset "Create Chunks (1)" begin
-        chunks_2 = create_chunks(x_test, 2)
+        chunks_2 = SparsityProbes._create_chunks(x_test, 2)
         @test chunks_2 == [1:2, 3:4]
        
         # this is uneven
-        chunks_3 = create_chunks(x_test, 3)
+        chunks_3 = SparsityProbes._create_chunks(x_test, 3)
         @test chunks_3 == [1:3, 4:4]
 
-        chunks_large = create_chunks(x_test, 10)
+        chunks_large = SparsityProbes._create_chunks(x_test, 10)
         @test chunks_large == [1:4]
     end
 
     @testset "Trace Input Chunk (2)" begin
         chunk = 1:2
         T = GradientTracer{Int, BitSet}
-        xt = trace_input_chunk(T, x_test, chunk)
+        xt = SparsityProbes._trace_input_chunk(T, x_test, chunk)
 
         @test eltype(xt) == T
         @test getfield(xt[1], 1) == BitSet([1])
@@ -71,7 +76,7 @@ end
             [false false; true  false]
         ]
 
-        combined = combine_patterns(patterns)
+        combined = SparsityProbes._combine_patterns(patterns)
         
         @test combined == [true  true ; true  false]
     end
@@ -87,5 +92,31 @@ end
     @testset "Handles single dependency and constant rows" begin
         x = [2.0, 0.5, -1.0, 4.0, 3.0]
         assert_chunked_matches_default(mixed_dependency_function, x)
+    end
+end
+
+@testset "Bloom Filter Detector Tests" begin
+    @testset "Validates filter parameters" begin
+        @test_throws ArgumentError BloomFilterDetector(0, 1)
+        @test_throws ArgumentError BloomFilterDetector(3, 0)
+        @test BloomFilterDetector(3, 3) isa BloomFilterDetector
+    end
+
+    @testset "Matches default detector when filter is collision-free for dependencies" begin
+        x = [1.0, -2.0, 3.0, -4.0, 5.0]
+        expected = jacobian_sparsity(cross_chunk_function, x, TracerSparsityDetector())
+        got = jacobian_sparsity(cross_chunk_function, x, BloomFilterDetector(128, 3))
+
+        @test size(got) == size(expected)
+        @test got == expected
+    end
+
+    @testset "Only false positives" begin
+        x = [2.0, 0.5, -1.0, 4.0, 3.0]
+        expected = jacobian_sparsity(mixed_dependency_function, x, TracerSparsityDetector())
+        got = jacobian_sparsity(mixed_dependency_function, x, BloomFilterDetector(16, 2))
+
+        @test size(got) == size(expected)
+        @test all(got .>= expected)
     end
 end
