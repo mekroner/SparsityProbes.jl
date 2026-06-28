@@ -6,9 +6,10 @@ module SparsityProbes
     
     const T = GradientTracer{Int, BitSet}
 
-    export jacobian_sparsity, ChunkedDetector, BloomFilterDetector
+    export jacobian_sparsity, ChunkedDetector, BloomFilterDetector, HierarchicalBloomFilterDetector
 
     include("chunked_detector.jl")
     include("bloom_filter_detector.jl")
+    include("hierarchical_bloom_filter_detector.jl")
 
 end # module

@@ -102,5 +102,6 @@ against the input seed matrix `S`. An interaction is recorded only if all
 """
 function _bloomharvest(Q::AbstractMatrix{Bool}, S::AbstractMatrix{Bool}, num_hashes_k::Integer)
     W = Int.(Q) * transpose(Int.(S))
-    return W .== num_hashes_k
+    required_matches = vec(sum(S; dims=2))
+    return W .== transpose(required_matches)
 end
