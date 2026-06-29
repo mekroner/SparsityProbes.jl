@@ -2,7 +2,7 @@
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://mekroner.github.io/SparsityProbes.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://mekroner.github.io/SparsityProbes.jl/dev/)
-[![Build Status](https://github.com/mekroner/SparsityProbes.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/mekroner/SparsityProbes.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Build Status](https://github.com/mekroner/SparsityProbes.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/mekroner/SparsityProbes.jl/actions?query=workflow%3ACI+workflow%3A%22Run+tests%22+branch%3Amain)
 [![Coverage](https://codecov.io/gh/mekroner/SparsityProbes.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/mekroner/SparsityProbes.jl)
 
 `SparsityProbes` extends the `ADTypes` interface to compute Jacobian sparsity patterns in isolated chunks. By dividing the input array into subsets and tracing them individually using `SparseConnectivityTracer`, it allows for piece-wise sparsity detection.
