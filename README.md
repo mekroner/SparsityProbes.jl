@@ -38,4 +38,11 @@ detector = ChunkedDetector(2)
 
 # Compute the sparsity pattern matrix
 sparsity_pattern = jacobian_sparsity(toy_function, x, detector)
+
+
+# To reduce memory requirements, a BloomFilter can be used:
+f(x) = [x[1]^2 + x[2], x[2] * x[3], x[3] - x[1]];
+x = [1.0, 2.0, 3.0];
+bloom_detector = BloomFilterDetector(10, 2);
+jacobian_sparsity(f, x, bloom_detector)
 ```
