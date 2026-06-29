@@ -1,6 +1,5 @@
 # SparsityProbes.jl
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://mekroner.github.io/SparsityProbes.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://mekroner.github.io/SparsityProbes.jl/dev/)
 [![Build Status](https://github.com/mekroner/SparsityProbes.jl/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/mekroner/SparsityProbes.jl/actions/workflows/test.yaml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/mekroner/SparsityProbes.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/mekroner/SparsityProbes.jl)
@@ -32,4 +31,11 @@ detector = ChunkedDetector(2)
 
 # Compute the sparsity pattern matrix
 sparsity_pattern = jacobian_sparsity(toy_function, x, detector)
+
+
+# To reduce memory requirements, a BloomFilter can be used:
+f(x) = [x[1]^2 + x[2], x[2] * x[3], x[3] - x[1]];
+x = [1.0, 2.0, 3.0];
+bloom_detector = BloomFilterDetector(10, 2);
+jacobian_sparsity(f, x, bloom_detector)
 ```
