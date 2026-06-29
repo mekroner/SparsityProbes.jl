@@ -5,7 +5,7 @@ using SparsityProbes:
     ChunkedDetector,
     HierarchicalBloomFilterDetector
 using Test
-using SparseConnectivityTracer: GradientTracer, TracerSparsityDetector
+using SparseConnectivityTracer: GradientTracer, TracerSparsityDetector, gradient
 using SparseArrays: SparseMatrixCSC, sprand
 
 
@@ -18,7 +18,7 @@ end
 function assert_chunked_matches_default(f, x; chunk_sizes=[1, 2, 3, length(x), length(x) + 2])
     expected = jacobian_sparsity(f, x, TracerSparsityDetector())
 
-    for chunk_size in chunk_sizes
+    @testset "Chunk-size $chunk_size" for chunk_size in chunk_sizes
         got = jacobian_sparsity(f, x, ChunkedDetector(chunk_size))
         @test size(got) == size(expected)
         @test got == expected
@@ -64,11 +64,11 @@ end
         xt = SparsityProbes._trace_input_chunk(T, x_test, chunk)
 
         @test eltype(xt) == T
-        @test getfield(xt[1], 1) == BitSet([1])
-        @test getfield(xt[2], 1) == BitSet([2])
+        @test gradient(xt[1]) == BitSet([1])
+        @test gradient(xt[2]) == BitSet([2])
 
-        @test getfield(xt[3], 1) == BitSet()
-        @test getfield(xt[4], 1) == BitSet()
+        @test gradient(xt[3]) == BitSet()
+        @test gradient(xt[4]) == BitSet()
     end
 
     @testset "Combine Patterns (3)" begin

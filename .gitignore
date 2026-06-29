@@ -1,7 +1,7 @@
 .vscode/*
 .DS_Store
-<<<<<<< HEAD
 *.pdf
-=======
 docs/Manifest.toml
->>>>>>> main
+docs/build/
+Manifest.toml
+test/Manifest.toml
