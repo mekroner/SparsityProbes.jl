@@ -40,32 +40,17 @@ jacobian_sparsity(f, x, bloom_detector)
 
 ### Public API
 
-```@docs
-SparsityProbes.jacobian_sparsity
+```@autodocs
+Modules = [SparsityProbes]
+Private = false
+Public = true
 ```
 
-```@docs
-SparsityProbes.ChunkedDetector
-```
-
-```@docs
-SparsityProbes.BloomFilterDetector
-```
-
-```@docs
-SparsityProbes.HierarchicalBloomFilterDetector
-```
 
 ### Internals
 
-```@docs
-SparsityProbes._create_chunks
-```
-
-```@docs
-SparsityProbes._trace_input_chunk
-```
-
-```@docs
-SparsityProbes._combine_patterns
+```@autodocs
+Modules = [SparsityProbes]
+Private = true
+Public = false
 ```
