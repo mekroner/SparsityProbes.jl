@@ -5,7 +5,8 @@ using SparsityProbes:
     ChunkedDetector,
     HierarchicalBloomFilterDetector
 using Test
-using SparseConnectivityTracer: GradientTracer, TracerSparsityDetector
+using SparseConnectivityTracer: GradientTracer, TracerSparsityDetector, gradient
+using SparseArrays: SparseMatrixCSC, sprand
 
 
 function toy_function(x)
@@ -17,7 +18,7 @@ end
 function assert_chunked_matches_default(f, x; chunk_sizes=[1, 2, 3, length(x), length(x) + 2])
     expected = jacobian_sparsity(f, x, TracerSparsityDetector())
 
-    for chunk_size in chunk_sizes
+    @testset "Chunk-size $chunk_size" for chunk_size in chunk_sizes
         got = jacobian_sparsity(f, x, ChunkedDetector(chunk_size))
         @test size(got) == size(expected)
         @test got == expected
@@ -63,11 +64,11 @@ end
         xt = SparsityProbes._trace_input_chunk(T, x_test, chunk)
 
         @test eltype(xt) == T
-        @test getfield(xt[1], 1) == BitSet([1])
-        @test getfield(xt[2], 1) == BitSet([2])
+        @test gradient(xt[1]) == BitSet([1])
+        @test gradient(xt[2]) == BitSet([2])
 
-        @test getfield(xt[3], 1) == BitSet()
-        @test getfield(xt[4], 1) == BitSet()
+        @test gradient(xt[3]) == BitSet()
+        @test gradient(xt[4]) == BitSet()
     end
 
     @testset "Combine Patterns (3)" begin
@@ -164,4 +165,61 @@ end
         @test size(got) == size(expected)
         @test got == expected
     end
+
+    @testset "Does not report dependencies for constant outputs" begin
+        constant_function(x) = [1.0, 2.0]
+        x = [3.0, -1.0, 4.0]
+        expected = jacobian_sparsity(constant_function, x, TracerSparsityDetector())
+        got = jacobian_sparsity(constant_function, x, HierarchicalBloomFilterDetector(128, 3))
+
+        @test size(got) == (2, length(x))
+        @test got == expected
+        @test !any(got)
+    end
+end
+
+
+# Fuzzy tests for all detectors, to ensure they don't crash on random inputs.
+
+struct RandomSparseNetwork
+    dependency_matrix::SparseMatrixCSC{Float64, Int}
+end
+
+# Make struct callable
+function (rsn::RandomSparseNetwork)(x::AbstractVector)
+    W = rsn.dependency_matrix
+    return sin.(W * x) .^ cos.(W * (x .^ 2))
+end
+
+# Allows us the bloom filters to over-approximate the sparsity pattern, but not under-approximate it.
+function equal_or_over_approximation(A::AbstractMatrix{Bool}, B::AbstractMatrix{Bool})
+    return size(A) == size(B) && all(A .>= B)
+end
+
+function fuzzy_test_detector(detector; n_tests::Int=1000, max_inputs::Int=100, max_outputs::Int=100)
+    @testset "Fuzzy Tests for $(typeof(detector)): $n_tests iterations" begin
+        for i in 1:n_tests
+            # Random dimension 
+            n_inputs = rand(1:max_inputs)
+            n_outputs = rand(1:max_outputs)
+
+            # random density between 1% and 50%
+            density = rand(0.01:0.01:0.5) 
+            W = sprand(n_outputs, n_inputs, density)
+            f_rand = RandomSparseNetwork(W)
+            x = randn(n_inputs)
+
+            expected = jacobian_sparsity(f_rand, x, TracerSparsityDetector())
+            got = jacobian_sparsity(f_rand, x, detector)
+
+            @test size(got) == size(expected)
+            @test equal_or_over_approximation(got, expected)
+        end
+    end
+end
+
+@testset "Fuzzy Tests" begin
+    fuzzy_test_detector(HierarchicalBloomFilterDetector(128, 3); n_tests=1000)
+    fuzzy_test_detector(BloomFilterDetector(128, 3); n_tests=1000)
+    fuzzy_test_detector(ChunkedDetector(10); n_tests=1000)
 end

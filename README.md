@@ -6,6 +6,13 @@
 
 `SparsityProbes` extends the `ADTypes` interface to compute Jacobian sparsity patterns in isolated chunks. By dividing the input array into subsets and tracing them individually using `SparseConnectivityTracer`, it allows for piece-wise sparsity detection.
 
+## Installation
+
+```julia
+julia> ]add https://github.com/mekroner/SparsityProbes.jl
+julia> using SparsityProbes
+```
+
 ## Usage
 
 To calculate the Jacobian sparsity of a function, use the `ChunkedDetector` alongside `ADTypes.jacobian_sparsity`.

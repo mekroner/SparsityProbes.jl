@@ -77,15 +77,15 @@ seed matrix `S`, returning the resulting observation matrix `Q`.
 """
 function _probe(f, S::AbstractMatrix{Bool})
     n, filter_size_m = size(S)
-    xt = Vector{T}(undef, n)
+    xt = Vector{DEFAULT_TRACER_TYPE}(undef, n)
     for i in 1:n
-        xt[i] = T(BitSet(findall(@view S[i, :])))
+        xt[i] = DEFAULT_TRACER_TYPE(BitSet(findall(@view S[i, :])))
     end
     yt = f(xt)
     yt_array = to_array(yt)
     Q = zeros(Bool, length(yt_array), filter_size_m)
     for (row, y) in enumerate(yt_array)
-        y isa T || continue
+        y isa DEFAULT_TRACER_TYPE || continue
         for column in getfield(y, :gradient)
             Q[row, column] = true
         end
