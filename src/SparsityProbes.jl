@@ -12,4 +12,8 @@ include("chunked_detector.jl")
 include("bloom_filter_detector.jl")
 include("hierarchical_bloom_filter_detector.jl")
 
+    function f(x)
+        return x .^2
+    end
+    
 end
