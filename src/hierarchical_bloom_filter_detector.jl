@@ -67,7 +67,7 @@ entry in some row; adjacent columns get different colors. Colors are `1:num_colo
 function _color_columns(P::AbstractMatrix{Bool})
     num_outputs, n = size(P)
     colors = zeros(Int, n)
-    neighbor_colors = Set{Int}()
+    neighbor_colors = BitSet()
     for i in 1:n
         empty!(neighbor_colors)
         for j in 1:num_outputs
