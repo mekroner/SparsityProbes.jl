@@ -32,12 +32,17 @@ Two-level detection:
 2. the columns of `Rbar` are colored so that two inputs sharing an output row get
    different colors; a second pass re-seeds each input with a single bit at its color
    and keeps a candidate `(output, input)` only if that color is observed in the output.
+
+f is the function to probe, x is the input vector, filter_size_m is the size of the Bloom filter, and num_hashes_k is the number of hashes used.
+By increasing filter_size_m or changing the number of hashes k, the rate of false positives can be reduced up to an asymptotic limit.
+Internal Variables: S is the seed matrix that can be multiplied with the nonzero pattern J of the Jacobian to obtain the compressed nonzero pattern Q: Q = J * S
 """
 function _jacobian_sparsity_hierarchical_bloom(f, x, filter_size_m::Integer, num_hashes_k::Integer)
     n = length(x)
 
     # level 1:
     # coarse Bloom pass -> over-approximation
+    # S is the seed matrix that can be multiplied with the nonzero pattern J of the Jacobian to obtain the compressed nonzero pattern Q: Q = J * S
     S = _bloomseed(n, num_hashes_k, filter_size_m)
     Q = _probe(f, S)
     Rbar = _bloomharvest(Q, S, num_hashes_k)
