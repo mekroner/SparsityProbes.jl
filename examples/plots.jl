@@ -40,6 +40,7 @@ end
 # ╔═╡ a024eb6a-5598-48b4-818b-0733f9e96b1c
 begin
     function tridiagonal_system(x)
+        Base.require_one_based_indexing(x)
         y = similar(x)
         y[1] = 2x[1] - x[2]
         for i in 2:(length(x)-1)
@@ -120,6 +121,7 @@ end
 # ╔═╡ b1527d52-46ad-42ee-845a-79f80e09f5ee
 begin
     function overlapping_system(x)
+        Base.require_one_based_indexing(x)
         y = similar(x)
         y[1] = x[1] * x[2]
         for i in 2:(length(x)-1)

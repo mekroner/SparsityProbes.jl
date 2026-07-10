@@ -64,6 +64,7 @@ Two-level detection:
 - `AbstractMatrix{Bool}`: The exact sparsity matrix after filtering out false positives.
 """
 function _jacobian_sparsity_hierarchical_bloom(f, x, filter_size_m::Integer, num_hashes_k::Integer)
+    _require_one_based_array(x)
     n = length(x)
 
     # level 1:
@@ -101,14 +102,14 @@ entry in some row; adjacent columns get different colors. Colors are `1:num_colo
 - `Vector{Int}`: A vector assigning a color ID to each column index.
 """
 function _color_columns(P::AbstractMatrix{Bool})
-    num_outputs, n = size(P)
+    _, n = size(P)
     colors = zeros(Int, n)
     neighbor_colors = BitSet()
-    for i in 1:n
+    for i in axes(P, 2)
         empty!(neighbor_colors)
-        for j in 1:num_outputs
+        for j in axes(P, 1)
             @inbounds P[j, i] || continue
-            for i2 in 1:(i - 1)
+            for i2 in first(axes(P, 2)):(i - 1)
                 @inbounds P[j, i2] && push!(neighbor_colors, colors[i2])
             end
         end
@@ -137,8 +138,8 @@ so each input carries the exact singleton set `{color(i)}` (no hashing, no colli
 function _colorseed(colors::AbstractVector{<:Integer}, num_colors::Integer)
     n = length(colors)
     S = zeros(Bool, n, num_colors)
-    for i in 1:n
-        @inbounds S[i, colors[i]] = true
+    for (i, color) in enumerate(colors)
+        @inbounds S[i, color] = true
     end
     return S
 end

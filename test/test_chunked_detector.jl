@@ -41,6 +41,15 @@ end
         @test gradient(xt[4]) == BitSet()
     end
 
+    @testset "Rejects non-one-based arrays" begin
+        chunk = 1:2
+        T = GradientTracer{Int, BitSet}
+        x_offset = ZeroBasedVector([10.0, 20.0, 30.0, 40.0])
+
+        @test_throws ArgumentError SparsityProbes._create_chunks(x_offset, 2)
+        @test_throws ArgumentError SparsityProbes._trace_input_chunk(T, x_offset, chunk)
+    end
+
     @testset "Combine Patterns (3)" begin
         patterns = [
             [true  false; false false],
@@ -72,5 +81,10 @@ end
     @testset "Handles single dependency and constant rows" begin
         x = [2.0, 0.5, -1.0, 4.0, 3.0]
         assert_chunked_matches_default(mixed_dependency_function, x)
+    end
+
+    @testset "Rejects non-one-based inputs at the public API" begin
+        x_offset = ZeroBasedVector([1.0, -2.0, 3.0, -4.0, 5.0])
+        @test_throws ArgumentError jacobian_sparsity(cross_chunk_function, x_offset, ChunkedDetector(2))
     end
 end

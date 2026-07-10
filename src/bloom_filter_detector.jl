@@ -57,6 +57,7 @@ Internal logic to execute the probabilistic Bloom filter sparsity tracking.
 - `AbstractMatrix`: The harvested sparsity matrix (may include mild false positives).
 """
 function _jacobian_sparsity_bloom_filter(f, x, filter_size_m::Integer, num_hashes_k::Integer)
+    _require_one_based_array(x)
     n = length(x)
     S = _bloomseed(n, num_hashes_k, filter_size_m)
     Q = _probe(f, S)
@@ -99,10 +100,10 @@ filter of size `filter_size_m`, using `num_hashes_k` hash functions.
 """
 function _bloomseed(n::Integer, num_hashes_k::Integer, filter_size_m::Integer)
     S = zeros(Bool, n, filter_size_m)
-    for i in 1:n
-        for j in 1:num_hashes_k
+    for i in axes(S, 1)
+        for j in Base.OneTo(num_hashes_k)
             l = _hash(i, j, filter_size_m)
-            S[i, l] = 1
+            S[i, l] = true
         end
     end
     return S
@@ -124,8 +125,8 @@ seed matrix `S`, returning the resulting observation matrix `Q`.
 function _probe(f, S::AbstractMatrix{Bool})
     n, filter_size_m = size(S)
     xt = Vector{DEFAULT_TRACER_TYPE}(undef, n)
-    for i in 1:n
-        xt[i] = DEFAULT_TRACER_TYPE(BitSet(findall(@view S[i, :])))
+    for (i, row) in enumerate(eachrow(S))
+        xt[i] = DEFAULT_TRACER_TYPE(BitSet(findall(row)))
     end
     yt = f(xt)
     yt_array = to_array(yt)
