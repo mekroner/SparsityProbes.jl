@@ -38,4 +38,11 @@ using SparseConnectivityTracer: TracerSparsityDetector
         @test got == expected
         @test !any(got)
     end
+
+    @testset "Rejects non-one-based inputs" begin
+        x_offset = ZeroBasedVector([1.0, -2.0, 3.0, -4.0, 5.0])
+        @test_throws ArgumentError jacobian_sparsity(
+            cross_chunk_function, x_offset, HierarchicalBloomFilterDetector(128, 3)
+        )
+    end
 end

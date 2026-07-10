@@ -25,7 +25,10 @@ using ADTypes: jacobian_sparsity
 using SparsityProbes: ChunkedDetector, BloomFilterDetector
 
 # Define your target function
-f(x) = [x[1]^2 + x[2], x[2] * x[3], x[3] - x[1]]
+function f(x)
+    x1, x2, x3 = x
+    return [x1^2 + x2, x2 * x3, x3 - x1]
+end
 
 # Define your input array
 x = [1.0, 2.0, 3.0]

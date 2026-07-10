@@ -53,6 +53,7 @@ Internal logic to execute the chunked sparsity tracking over the function `f`.
 - `AbstractMatrix`: The combined sparsity matrix aggregated across all chunks.
 """
 function _jacobian_sparsity_chunked(f, x, chunk_size)
+    _require_one_based_array(x)
     chunks = _create_chunks(x, chunk_size)
     patterns = map(chunks) do chunk
         xt = _trace_input_chunk(DEFAULT_TRACER_TYPE, x, chunk)
@@ -76,6 +77,7 @@ Handles uneven edge cases and chunk sizes larger than the array length.
 - `Vector{UnitRange{Int}}`: A collection of index ranges partitioning the array.
 """
 function _create_chunks(x::AbstractArray, chunk_size::Int)
+    _require_one_based_array(x)
     n = length(x)
     return [i:min(i + chunk_size - 1, n) for i in 1:chunk_size:n]
 end
@@ -95,8 +97,9 @@ are seeded with active tracers. All other indices are filled with empty tracers.
 - `Vector{T}`: A tracer-wrapped vector ready for automatic differentiation tracking.
 """
 function _trace_input_chunk(T::Type{<:GradientTracer}, x::AbstractArray, chunk::UnitRange{Int})
+    _require_one_based_array(x)
     xt = Vector{T}(undef, length(x))
-    for i in eachindex(x)
+    for i in eachindex(xt)
         xt[i] = myempty(T)
         if i in chunk
             xt[i] = T(BitSet(i))

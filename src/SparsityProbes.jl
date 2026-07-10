@@ -8,6 +8,11 @@ const DEFAULT_TRACER_TYPE = GradientTracer{Int, BitSet}
 
 export jacobian_sparsity, ChunkedDetector, BloomFilterDetector, HierarchicalBloomFilterDetector
 
+@inline function _require_one_based_array(x)
+    x isa AbstractArray && Base.require_one_based_indexing(x)
+    return x
+end
+
 include("chunked_detector.jl")
 include("bloom_filter_detector.jl")
 include("hierarchical_bloom_filter_detector.jl")

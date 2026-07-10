@@ -30,7 +30,10 @@ By splitting the input space into smaller, sequential chunks, it reduces the act
 The `chunk_size` is a trade of between runtime and memory footprint, where small values cause low memory usage and high runtime. 
 ```@example
 using SparsityProbes, ADTypes
-f(x) = [x[1]^2 + x[2], x[2] * x[3], x[3] - x[1]]
+function f(x)
+    x1, x2, x3 = x
+    return [x1^2 + x2, x2 * x3, x3 - x1]
+end
 x = [1.0, 2.0, 3.0]
 detector = ChunkedDetector(2)
 jacobian_sparsity(f, x, detector)
@@ -46,7 +49,10 @@ The `num_hashes_k` is a trade-off between hashing runtime and filter saturation,
 
 ```@example
 using SparsityProbes, ADTypes
-f(x) = [x[1]^2 + x[2], x[2] * x[3], x[3] - x[1]]
+function f(x)
+    x1, x2, x3 = x
+    return [x1^2 + x2, x2 * x3, x3 - x1]
+end
 x = [1.0, 2.0, 3.0]
 detector = BloomFilterDetector(10, 2)
 jacobian_sparsity(f, x, detector)
@@ -59,7 +65,10 @@ This method uses the same parameters as the standart Bloom filter.
 
 ```@example
 using SparsityProbes, ADTypes
-f(x) = [x[1]^2 + x[2], x[2] * x[3], x[3] - x[1]]
+function f(x)
+    x1, x2, x3 = x
+    return [x1^2 + x2, x2 * x3, x3 - x1]
+end
 x = [1.0, 2.0, 3.0]
 detector = HierarchicalBloomFilterDetector(10, 2)
 jacobian_sparsity(f, x, detector)
