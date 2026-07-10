@@ -1,6 +1,17 @@
 # LLM Usage
 
+### Session 3 July
+URL: https://share.gemini.google/KV4yXs9bvUns
 
+Question:
+```
+https://github.com/E-175/SpectralClustering.jl/tree/main/src
+```
+Question:
+```
+Can you suggest any performance improvements in julia files in this source code?
+
+```
 
 ### Session 29 Jun
 URL: https://share.gemini.google/oMWIz055v4EA
