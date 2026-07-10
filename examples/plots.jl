@@ -60,14 +60,14 @@ end
 
 # ╔═╡ 403e03b7-1508-43ee-94cb-2068b55078d9
 begin
-bf_det = BloomFilterDetector(30, 10)
+bf_det = BloomFilterDetector(10, 2)
 
 plot_jacobian_sparsity(tridiagonal_system, x_test, bf_det)
 end
 
 # ╔═╡ c7c2abe6-ea88-4e17-8fbf-be47b7aa367d
 begin
-hbf_det = HierarchicalBloomFilterDetector(30, 10)
+hbf_det = HierarchicalBloomFilterDetector(10, 2)
 
 plot_jacobian_sparsity(tridiagonal_system, x_test, hbf_det)
 end
