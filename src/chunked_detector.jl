@@ -12,6 +12,12 @@ sparsity pattern in blocks of a given `chunk_size` to optimize memory overhead.
 """
 struct ChunkedDetector
     chunk_size::Int
+    
+    function ChunkedDetector(chunk_size::Int)
+        chunk_size > 0 ||
+            throw(ArgumentError("ChunkedDetector requires chunk_size > 0"))
+        return new(chunk_size)
+    end
 end
 
 """
