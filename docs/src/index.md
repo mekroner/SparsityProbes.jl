@@ -13,7 +13,6 @@ Automatic differentiation (AD) is a crucial method in modern computing, especial
 However, these computations can be vastly accelerated when Jacobians exhibit sparsity [ASDGuide](@cite). Despite its potential, automatic sparse differentiation (ASD) remains largely underutilized and is a topic of cutting-edge research. 
 A critical prerequisite for unlocking these performance gains is the efficient determination of the exact Jacobian sparsity structure [Hovland2026](@cite). 
 [SparsityProbes.jl](https://github.com/mekroner/SparsityProbes.jl) extends [SparseConnectivityTracer.jl](https://github.com/adrhill/SparseConnectivityTracer.jl) by introducing new topology discovery techniques, including probabilistic Bloom filters [Hovland2026](@cite). 
-By minimizing the computational overhead of structure detection, this package eliminates redundant derivative calculations to directly accelerate downstream sparse AD pipelines for large-scale models.
 
 ## Installation
 
