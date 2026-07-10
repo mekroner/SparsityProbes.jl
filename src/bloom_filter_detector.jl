@@ -3,7 +3,13 @@
 
 A detector configuration for `ADTypes.jacobian_sparsity` that uses a probabilistic 
 Bloom filter approach to determine the sparsity pattern, reducing memory footprint.
-Requires both `filter_size_m` and `num_hashes_k` to be strictly positive.
+
+# Arguments
+- `filter_size_m::Int`: The size of the Bloom filter bit array.
+- `num_hashes_k::Int`: The number of independent hash functions to use.
+
+# Returns
+- `BloomFilterDetector`: An instance of the Bloom filter detector configuration.
 """
 struct BloomFilterDetector
     filter_size_m::Int
@@ -23,6 +29,14 @@ end
 
 Compute the Jacobian sparsity pattern of a function `f` at input `x` using 
 a probabilistic Bloom filter strategy.
+
+# Arguments
+- `f`: The target function whose Jacobian sparsity is being analyzed.
+- `x`: The input argument where the sparsity is evaluated.
+- `detector::BloomFilterDetector`: The standard Bloom filter configuration.
+
+# Returns
+- `AbstractMatrix`: The standard probabilistic Jacobian sparsity pattern matrix.
 """
 function ADTypes.jacobian_sparsity(f, x, detector::BloomFilterDetector)
     return _jacobian_sparsity_bloom_filter(f, x, detector.filter_size_m, detector.num_hashes_k)
@@ -32,6 +46,15 @@ end
     _jacobian_sparsity_bloom_filter(f, x, filter_size_m::Integer, num_hashes_k::Integer)
 
 Internal logic to execute the probabilistic Bloom filter sparsity tracking.
+
+# Arguments
+- `f`: The target function.
+- `x`: The input argument array.
+- `filter_size_m::Integer`: The size of the underlying Bloom filter bit array.
+- `num_hashes_k::Integer`: The number of hash functions to deploy.
+
+# Returns
+- `AbstractMatrix`: The harvested sparsity matrix (may include mild false positives).
 """
 function _jacobian_sparsity_bloom_filter(f, x, filter_size_m::Integer, num_hashes_k::Integer)
     n = length(x)
@@ -46,6 +69,14 @@ end
 
 Compute a hash value for index `i` using seed `j`, returning a 1-based 
 index bounded by `filter_size_m` for Bloom filter assignments.
+
+# Arguments
+- `i::Integer`: The input variable coordinate index.
+- `j::Integer`: The specific hash function identifier/seed index.
+- `filter_size_m::Integer`: The maximum filter size bounding the output range.
+
+# Returns
+- `Integer`: A 1-based index between `1` and `filter_size_m`.
 """
 function _hash(i::Integer, j::Integer, filter_size_m::Integer)
     h = xxh32([UInt32(i)], UInt32(j))
@@ -57,6 +88,14 @@ end
 
 Generate a Bloom filter seed matrix `S` mapping `n` inputs into a 
 filter of size `filter_size_m`, using `num_hashes_k` hash functions.
+
+# Arguments
+- `n::Integer`: Total length of the input vector.
+- `num_hashes_k::Integer`: Number of hashes per element.
+- `filter_size_m::Integer`: Bit capacity of each filter instance.
+
+# Returns
+- `Matrix{Bool}`: An `n × filter_size_m` boolean seeding pattern layout.
 """
 function _bloomseed(n::Integer, num_hashes_k::Integer, filter_size_m::Integer)
     S = zeros(Bool, n, filter_size_m)
@@ -74,6 +113,13 @@ end
 
 Evaluate the function `f` using sparse tracers initialized from the Bloom filter 
 seed matrix `S`, returning the resulting observation matrix `Q`.
+
+# Arguments
+- `f`: The target function to trace over.
+- `S::AbstractMatrix{Bool}`: The initial input seeding blueprint.
+
+# Returns
+- `Matrix{Bool}`: A matrix mapping output equations to their active tracked bit intersections.
 """
 function _probe(f, S::AbstractMatrix{Bool})
     n, filter_size_m = size(S)
@@ -99,6 +145,14 @@ end
 Recover the Jacobian sparsity pattern by matching output observations `Q` 
 against the input seed matrix `S`. An interaction is recorded only if all 
 `num_hashes_k` bits match.
+
+# Arguments
+- `Q::AbstractMatrix{Bool}`: The resulting observation matrix tracked at the outputs.
+- `S::AbstractMatrix{Bool}`: The original seed layout applied at the inputs.
+- `num_hashes_k::Integer`: The number of expected matching entries per connection.
+
+# Returns
+- `AbstractMatrix{Bool}`: The reconstructed boolean sparsity pattern matrix.
 """
 function _bloomharvest(Q::AbstractMatrix{Bool}, S::AbstractMatrix{Bool}, num_hashes_k::Integer)
     W = Int.(Q) * transpose(Int.(S))
