@@ -1,10 +1,12 @@
 using SparsityProbes
 using Documenter
+using DocumenterCitations
 
 DocMeta.setdocmeta!(SparsityProbes, :DocTestSetup, :(using SparsityProbes); recursive=true)
-
+bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"); style=:numeric)
 makedocs(;
     modules=[SparsityProbes],
+    plugins=[bib],
     authors=
         "Magnus Kroner <kroner@campus.tu-berlin.de>,
         Sai Krishna Mandagiri <mandagiri@campus.tu-berlin.de>,
@@ -18,6 +20,7 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "References" => "references.md"
     ],
 )
 
