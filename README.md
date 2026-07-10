@@ -15,34 +15,36 @@ julia> using SparsityProbes
 
 ## Usage
 
+This package provides three detection algorithms, a `ChunkedDetector` that splits the work into chunks, a `BloomFilterDetector`, trading absolute precision for memory reduction, and `HierarchicalBloomFilterDetector` that dynamically refines the probabilistic estimation of the Bloom filter in a second pass.
 To calculate the Jacobian sparsity of a function, use the `ChunkedDetector` alongside `ADTypes.jacobian_sparsity`.
 
 ### Basic Example
 
 ```julia
 using ADTypes: jacobian_sparsity
-using SparsityProbes: ChunkedDetector
+using SparsityProbes: ChunkedDetector, BloomFilterDetector
 
 # Define your target function
-function toy_function(x)
-    y1 = x[1] * x[2]
-    y2 = x[2] + 0.0
-    return [y1, y2]
-end
+f(x) = [x[1]^2 + x[2], x[2] * x[3], x[3] - x[1]]
 
 # Define your input array
-x = [10.0, 20.0, 30.0, 40.0]
+x = [1.0, 2.0, 3.0]
 
-# Initialize the detector with a specific chunk size (e.g., 2)
+# Initialize the detector with a specific `chunk_size` (e.g., 2)
 detector = ChunkedDetector(2)
 
 # Compute the sparsity pattern matrix
-sparsity_pattern = jacobian_sparsity(toy_function, x, detector)
+jacobian_sparsity(f, x, detector)
+# Produces a sparse matrix with 6 stored entries:
+# 1  1  ⋅
+# ⋅  1  1
+# 1  ⋅  1
 
-
-# To reduce memory requirements, a BloomFilter can be used:
-f(x) = [x[1]^2 + x[2], x[2] * x[3], x[3] - x[1]];
-x = [1.0, 2.0, 3.0];
+# A BloomFilter can be used with `filter_size`(10) and the number of independent hash functions `num_hashes_k`(2).
 bloom_detector = BloomFilterDetector(10, 2);
 jacobian_sparsity(f, x, bloom_detector)
+# Produces a 3x3 BitMatrix:
+# 1  1  0
+# 0  1  1
+# 1  0  1
 ```

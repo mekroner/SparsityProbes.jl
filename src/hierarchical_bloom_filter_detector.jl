@@ -2,7 +2,14 @@
     HierarchicalBloomFilterDetector(filter_size_m::Int, num_hashes_k::Int)
 
 Like `BloomFilterDetector`, but refines the (over-approximated) Bloom pattern with a
-second, color-seeded pass that removes false positives (Hovland 2026, Section 4).
+second, color-seeded pass that removes false positives ([Hovland2026](@cite), Section 4).
+
+# Arguments
+- `filter_size_m::Int`: The size of the Bloom filter bit array.
+- `num_hashes_k::Int`: The number of independent hash functions to use.
+
+# Returns
+- `HierarchicalBloomFilterDetector`: An instance of the hierarchical detector configuration.
 """
 struct HierarchicalBloomFilterDetector
     filter_size_m::Int
@@ -17,6 +24,20 @@ struct HierarchicalBloomFilterDetector
     end
 end
 
+"""
+    ADTypes.jacobian_sparsity(f, x, detector::HierarchicalBloomFilterDetector)
+
+Compute the Jacobian sparsity pattern of a function `f` at input `x` using 
+a multi-level hierarchical Bloom filter strategy to eliminate false positives.
+
+# Arguments
+- `f`: The target function whose Jacobian sparsity is being analyzed.
+- `x`: The input argument where the sparsity is evaluated.
+- `detector::HierarchicalBloomFilterDetector`: The hierarchical Bloom configuration.
+
+# Returns
+- `AbstractMatrix{Bool}`: The final, refined Jacobian sparsity pattern matrix.
+"""
 function ADTypes.jacobian_sparsity(f, x, detector::HierarchicalBloomFilterDetector)
     return _jacobian_sparsity_hierarchical_bloom(
         f, x, detector.filter_size_m, detector.num_hashes_k,
@@ -32,6 +53,15 @@ Two-level detection:
 2. the columns of `Rbar` are colored so that two inputs sharing an output row get
    different colors; a second pass re-seeds each input with a single bit at its color
    and keeps a candidate `(output, input)` only if that color is observed in the output.
+
+    # Arguments
+- `f`: The target function.
+- `x`: The input argument array.
+- `filter_size_m::Integer`: The size of the underlying Bloom filter bit array.
+- `num_hashes_k::Integer`: The number of hash functions for the first-level pass.
+
+# Returns
+- `AbstractMatrix{Bool}`: The exact sparsity matrix after filtering out false positives.
 """
 function _jacobian_sparsity_hierarchical_bloom(f, x, filter_size_m::Integer, num_hashes_k::Integer)
     n = length(x)
@@ -63,6 +93,12 @@ end
 Greedy distance-1 coloring of the column-intersection graph of `P`
 (rows = outputs, columns = inputs). Two columns are adjacent iff they share a `true`
 entry in some row; adjacent columns get different colors. Colors are `1:num_colors`.
+
+# Arguments
+- `P::AbstractMatrix{Bool}`: The over-approximated sparsity pattern matrix to color.
+
+# Returns
+- `Vector{Int}`: A vector assigning a color ID to each column index.
 """
 function _color_columns(P::AbstractMatrix{Bool})
     num_outputs, n = size(P)
@@ -90,6 +126,13 @@ end
 
 Seed matrix for the color pass: row `i` has a single `true` at column `colors[i]`,
 so each input carries the exact singleton set `{color(i)}` (no hashing, no collisions).
+
+# Arguments
+- `colors::AbstractVector{<:Integer}`: The color assignments for each input index.
+- `num_colors::Integer`: The total number of unique colors used.
+
+# Returns
+- `Matrix{Bool}`: An `n × num_colors` seed matrix for the secondary color trace.
 """
 function _colorseed(colors::AbstractVector{<:Integer}, num_colors::Integer)
     n = length(colors)
